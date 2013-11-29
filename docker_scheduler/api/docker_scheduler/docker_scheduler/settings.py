@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'docker_scheduler.apphome',
 )
 
 MIDDLEWARE_CLASSES = (
