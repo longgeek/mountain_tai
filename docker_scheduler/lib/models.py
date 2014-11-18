@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
 
@@ -19,17 +18,32 @@ class Image(models.Model):
     class Meta:
         app_label = "apphome"
 
-
-class Flavor(models.Model):
-    name = models.CharField(max_length=20)
-    cpu = models.IntegerField()
-    mem = models.IntegerField()    # MB
-    sys_disk = models.IntegerField()    # MB
-    volume = models.IntegerField()     # MB
-    bandwidth = models.IntegerField()  # KB
-
-    class Meta:
-        app_label = "apphome"
+Flavor = {
+    '1': {
+        'cpu': 1,
+        'mem': 128,  # MB
+        'name': 'tiny',
+        'volume': 0,  # MB
+        'sys_disk': 5120,  # MB
+        'bandwidth': 512,  # KB
+    },
+    '2': {
+        'cpu': 1,
+        'mem': 256,  # MB
+        'name': 'small',
+        'volume': 0,  # MB
+        'sys_disk': 10240,  # MB
+        'bandwidth': 1024,  # MB
+    },
+    '3': {
+        'cpu': 1,
+        'mem': 512,  # MB
+        'name': 'standard',
+        'volume': 0,  # MB
+        'sys_disk': 10240,  # MB
+        'bandwidth': 1024,  # MB
+    }
+}
 
 
 class HOST(models.Model):
@@ -50,9 +64,9 @@ class HOST(models.Model):
 class Container(models.Model):
     cid = models.CharField(max_length=80)
     size = models.CharField(max_length=40)
-    flavor = models.ForeignKey(Flavor)
+    flavor_id = models.CharField(max_length=20)
     image = models.ForeignKey(Image)
-    user = models.ForeignKey(User)
+    user_id = models.CharField(max_length=25)
     host_ip = models.ForeignKey(HOST, null=True, blank=True)
     name = models.CharField(max_length=20, null=True, blank=True)
     command = models.CharField(max_length=200, null=True, blank=True)
