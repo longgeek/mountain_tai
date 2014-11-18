@@ -1,2 +1,4 @@
 docker-py>=0.6.0
+django>=1.6.0
+djangorestframework
 pbr>=0.6,!=0.7,<1.0
