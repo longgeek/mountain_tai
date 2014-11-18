@@ -46,7 +46,7 @@ Flavor = {
 }
 
 
-class HOST(models.Model):
+class Host(models.Model):
     ip = models.CharField(max_length=150)
     port = models.CharField(max_length=20)
     image = models.ManyToManyField(Image)
@@ -67,7 +67,7 @@ class Container(models.Model):
     flavor_id = models.CharField(max_length=20)
     image = models.ForeignKey(Image)
     user_id = models.CharField(max_length=25)
-    host_ip = models.ForeignKey(HOST, null=True, blank=True)
+    host = models.ForeignKey(Host, null=True, blank=True)
     name = models.CharField(max_length=20, null=True, blank=True)
     command = models.CharField(max_length=200, null=True, blank=True)
     created = models.CharField(max_length=40)
