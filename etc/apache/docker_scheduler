@@ -1,0 +1,14 @@
+<VirtualHost *:8088>
+
+    <Directory /usr/local/lib/python2.7/dist-packages/docker_scheduler>
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+    WSGIScriptAlias / /usr/local/lib/python2.7/dist-packages/docker_scheduler/api/app.wsgi
+
+    <Directory /usr/local/lib/python2.7/dist-packages/docker_scheduler>
+        Order allow,deny
+        Allow from all
+    </Directory>
+</VirtualHost>
