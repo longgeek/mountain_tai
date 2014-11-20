@@ -12,8 +12,8 @@ class Image(models.Model):
     created = models.CharField(max_length=40)
     repository = models.CharField(max_length=20)
     virtual_size = models.CharField(max_length=20)
-    os_type = models.CharField(max_length=25, choices=OS_TYPES)
-    os_version = models.CharField(max_length=20)
+    os_type = models.CharField(max_length=25, choices=OS_TYPES, null=True, blank=True)
+    os_version = models.CharField(max_length=20, null=True, blank=True)
 
     class Meta:
         app_label = "apphome"
@@ -62,16 +62,16 @@ class Host(models.Model):
 
 
 class Container(models.Model):
-    cid = models.CharField(max_length=80)
-    size = models.CharField(max_length=40)
+    cid = models.CharField(max_length=80, null=True, blank=True)
+    size = models.CharField(max_length=40, null=True, blank=True)
     flavor_id = models.CharField(max_length=20)
     image = models.ForeignKey(Image)
     user_id = models.CharField(max_length=25)
     host = models.ForeignKey(Host, null=True, blank=True)
     name = models.CharField(max_length=20, null=True, blank=True)
     command = models.CharField(max_length=200, null=True, blank=True)
-    created = models.CharField(max_length=40)
-    status = models.CharField(max_length=40)
+    created = models.CharField(max_length=40, null=True, blank=True)
+    status = models.CharField(max_length=40, null=True, blank=True)
     ports = models.CharField(max_length=200, null=True, blank=True)
     hostname = models.CharField(max_length=80, null=True, blank=True)
 
