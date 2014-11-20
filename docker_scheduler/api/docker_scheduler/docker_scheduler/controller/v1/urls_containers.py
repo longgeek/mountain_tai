@@ -15,13 +15,13 @@ urlpatterns = patterns(
     url(r'^create$',
         views.ContainerCreateView.as_view()),
 
-    url(r'^(?P<pk>[0-9]+)/$',
+    url(r'^(?P<cid>[0-9]+)/$',
         views.ContainerDetailView.as_view()),
 
-    url(r'^(?P<pk>[0-9]+)/update$',
+    url(r'^(?P<cid>[0-9]+)/update$',
         views.ContainerUpdateView.as_view()),
 
-    url(r'^(?P<pk>[0-9]+)/delete$',
+    url(r'^(?P<cid>[0-9]+)/delete$',
         views.ContainerDeleteView.as_view()),
 
 )
