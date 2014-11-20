@@ -42,7 +42,7 @@ def create_container(user,
                 image_name = image.iid
             docker_conn = docker.Client(
                 base_url="tcp://" + hostip + ":" + host.port)
-            docker_conn.create_container(
+            newcontainer = docker_conn.create_container(
                 name=name,
                 image=image_name,
                 ports=ports,
@@ -51,6 +51,10 @@ def create_container(user,
                 detach=True,
                 stdin_open=True,
             )
+            try:
+                docker_conn.start(container=newcontainer['Id'])
+            except Exception, msgs:
+                return (1, msgs, '')
             # container_db = models.Container(cid=newcontainer['Id'][:12],
             #                                 flavor=flavor,
             #                                 image=image,

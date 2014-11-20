@@ -28,7 +28,7 @@ while True:
                     host.container_set.all().delete()
                 host.status = False
                 host.save()
-            if containers:
+            if containers != "":
                 if not host.status:
                     host.status = True
                     host.save()
