@@ -4,7 +4,7 @@
 
 from django.http import Http404
 
-from models import Image, Host, Container
+from docker_scheduler.apphome.models import Image, Host, Container
 
 from serializers import HostSerializer
 from serializers import ImageSerializer
@@ -16,9 +16,12 @@ from rest_framework.response import Response
 
 
 class ImageView(APIView):
-    """创建一个镜像;
-       列出所有的镜像或, 根据 Image db 字段过滤出相应的镜像;
+    """列出所有镜像，或者根据 url 参数进行过滤,
+       重新定义 get 请求
 
+    路径:
+       GET /images/ HTTP/1.1
+       Content-Type: application/json
     """
 
     def get(self, request, format=None):
@@ -41,7 +44,15 @@ class ImageView(APIView):
         serializer = ImageSerializer(images, many=True)
         return Response(serializer.data)
 
-    # 创建一个镜像
+
+class ImageCreateView(APIView):
+    """创建一个镜像, 重新定义 post 请求
+
+    路径:
+       POST /images/create HTTP/1.1
+       Content-Type: application/json
+    """
+
     def post(self, request, format=None):
         serializer = ImageSerializer(data=request.DATA)
         if serializer.is_valid():
@@ -50,8 +61,13 @@ class ImageView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ImageDetailView(APIView):
-    """根据 pk 获取镜像"""
+class ImageUpdateView(APIView):
+    """更新一个镜像, 重新定义 put 请求
+
+    路径:
+       PUT /images/(pk)/update HTTP/1.1
+       Content-Type: application/json
+    """
 
     def get_object(self, pk):
         try:
@@ -59,13 +75,6 @@ class ImageDetailView(APIView):
         except Image.DoesNotExist:
             raise Http404
 
-    # 获取镜像
-    def get(self, request, pk, format=None):
-        image = self.get_object(pk)
-        serializer = ImageSerializer(image)
-        return Response(serializer.data)
-
-    # 更新镜像
     def put(self, request, pk, format=None):
         image = self.get_object(pk)
         serializer = ImageSerializer(image, data=request.DATA)
@@ -74,21 +83,56 @@ class ImageDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 删除镜像
+
+class ImageDeleteView(APIView):
+    """删除一个镜像, 重新定义 delete 请求
+
+    路径:
+       DELETE /images/(pk)/delete HTTP/1.1
+       Content-Type: application/json
+    """
+
+    def get_object(self, pk):
+        try:
+            return Image.objects.get(pk=pk)
+        except Image.DoesNotExist:
+            raise Http404
+
     def delete(self, request, pk, format=None):
         image = self.get_object(pk)
         image.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class HostView(APIView):
-    """创建一个主机;
-       列出所有的主机或, 根据 Host db 字段过滤出相应的主机;
+class ImageDetailView(APIView):
+    """根据 pk 获取镜像, 重新定义 get 请求
 
+    路径:
+       get /images/(pk)/ HTTP/1.1
+       Content-Type: application/json
+    """
+
+    def get_object(self, pk):
+        try:
+            return Image.objects.get(pk=pk)
+        except Image.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        image = self.get_object(pk)
+        serializer = ImageSerializer(image)
+        return Response(serializer.data)
+
+
+class HostView(APIView):
+    """列出所有的主机或, 根据 url 参数过滤出相应的主机;
+
+    路径:
+       GET /hosts/ HTTP/1.1
+       Content-Type: application/json
     """
 
     def get(self, request, format=None):
-
         # 如果有 url 参数
         if request.GET:
             # 从数据库中过滤相应的对象
@@ -107,7 +151,15 @@ class HostView(APIView):
         serializer = HostSerializer(hosts, many=True)
         return Response(serializer.data)
 
-    # 添加一台主机
+
+class HostCreateView(APIView):
+    """创建一个主机, 重新定义 post 请求
+
+    路径:
+       POST /hosts/create HTTP/1.1
+       Content-Type: application/json
+    """
+
     def post(self, request, format=None):
         serializer = HostSerializer(data=request.DATA)
         if serializer.is_valid():
@@ -116,8 +168,13 @@ class HostView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class HostDetailView(APIView):
-    """根据 pk 获取主机信息"""
+class HostUpdateView(APIView):
+    """更新一个主机, 重新定义 put 请求
+
+    路径:
+       PUT /hosts/(pk)/update HTTP/1.1
+       Content-Type: application/json
+    """
 
     def get_object(self, pk):
         try:
@@ -125,13 +182,6 @@ class HostDetailView(APIView):
         except Host.DoesNotExist:
             raise Http404
 
-    # 获取主机信息
-    def get(self, request, pk, format=None):
-        host = self.get_object(pk)
-        serializer = HostSerializer(host)
-        return Response(serializer.data)
-
-    # 更新主机信息
     def put(self, request, pk, format=None):
         host = self.get_object(pk)
         serializer = HostSerializer(host, data=request.DATA)
@@ -140,17 +190,53 @@ class HostDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 删除主机
+
+class HostDeleteView(APIView):
+    """删除一个主机, 重新定义 delete 请求
+
+    路径:
+       DELETE /hosts/(id)/delete HTTP/1.1
+       Content-Type: application/json
+    """
+
+    def get_object(self, pk):
+        try:
+            return Host.objects.get(pk=pk)
+        except Host.DoesNotExist:
+            raise Http404
+
     def delete(self, request, pk, format=None):
         host = self.get_object(pk)
         host.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ContainerView(APIView):
-    """创建一个主机;
-       列出所有的主机或, 根据 Container db 字段过滤出相应的主机;
+class HostDetailView(APIView):
+    """根据 pk 获取主机信息, 重新定义 get 请求
 
+    路径:
+       GET /hosts/(id)/ HTTP/1.1
+       Content-Type: application/json
+    """
+
+    def get_object(self, pk):
+        try:
+            return Host.objects.get(pk=pk)
+        except Host.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        host = self.get_object(pk)
+        serializer = HostSerializer(host)
+        return Response(serializer.data)
+
+
+class ContainerView(APIView):
+    """列出所有的主机或, 根据 url 参数过滤出相应的主机;
+
+    路径:
+       GET /containers/ HTTP/1.1
+       Content-Type: application/json
     """
 
     def get(self, request, format=None):
@@ -173,7 +259,15 @@ class ContainerView(APIView):
         serializer = ContainerSerializer(containers, many=True)
         return Response(serializer.data)
 
-    # 添加一台主机
+
+class ContainerCreateView(APIView):
+    """创建一个容器, 重新定义 post 请求
+
+    路径:
+       POST /containers/create HTTP/1.1
+       Content-Type: application/json
+    """
+
     def post(self, request, format=None):
         serializer = ContainerSerializer(data=request.DATA)
         if serializer.is_valid():
@@ -182,8 +276,13 @@ class ContainerView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ContainerDetailView(APIView):
-    """根据 pk 获取主机信息"""
+class ContainerUpdateView(APIView):
+    """更新一个容器, 重新定义 put 请求
+
+    路径:
+       PUT /containers/(cid)/update HTTP/1.1
+       Content-Type: application/json
+    """
 
     def get_object(self, pk):
         try:
@@ -191,13 +290,6 @@ class ContainerDetailView(APIView):
         except Container.DoesNotExist:
             raise Http404
 
-    # 获取主机信息
-    def get(self, request, pk, format=None):
-        container = self.get_object(pk)
-        serializer = ContainerSerializer(container)
-        return Response(serializer.data)
-
-    # 更新主机信息
     def put(self, request, pk, format=None):
         container = self.get_object(pk)
         serializer = ContainerSerializer(container, data=request.DATA)
@@ -206,8 +298,42 @@ class ContainerDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # 删除主机
+
+class ContainerDeleteView(APIView):
+    """删除一个容器, 重新定义 delete 请求
+
+    路径:
+       DELETE /containers/(cid)/delete HTTP/1.1
+       Content-Type: application/json
+    """
+
+    def get_object(self, pk):
+        try:
+            return Container.objects.get(pk=pk)
+        except Container.DoesNotExist:
+            raise Http404
+
     def delete(self, request, pk, format=None):
         container = self.get_object(pk)
         container.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ContainerDetailView(APIView):
+    """根据 pk 获取主机信息, 重新定义 get 请求
+
+    路径:
+       get /containers/(pk)/ HTTP/1.1
+       Content-Type: application/json
+    """
+
+    def get_object(self, pk):
+        try:
+            return Container.objects.get(pk=pk)
+        except Container.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        container = self.get_object(pk)
+        serializer = ContainerSerializer(container)
+        return Response(serializer.data)

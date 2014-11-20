@@ -1,4 +1,4 @@
-from models import Image, Host, Container
+from docker_scheduler.apphome.models import Image, Host, Container
 from rest_framework import serializers
 
 
