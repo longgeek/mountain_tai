@@ -4,9 +4,15 @@
 # from docker_scheduler import container
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "setting")
-from docker_scheduler.apphome import models
+
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+
+import models
 from docker import Client
 import time
+import django
+django.setup()
 hostlist = models.Host.objects.all()
 lasttime = int(time.time())
 while True:
@@ -26,7 +32,7 @@ while True:
                 if not host.status:
                     host.status = True
                     host.save()
-                dbcon = models.Container.objects \
+                dbcon = models.Container.objects\
                     .filter(host=host).order_by("created")
                 dbcontainers = [{u'Status': container.status,
                                  u'Created': int(container.created),
@@ -48,6 +54,7 @@ while True:
                     imageinfo = container['Image'].split(":")
                     imageobject = models.Image.objects \
                         .get(repository=imageinfo[0], tag=imageinfo[1])
+                    name = ' '.join(container['Names'])
                     containernew = models.Container(
                         cid=container['Id'],
                         size=container['SizeRw'],

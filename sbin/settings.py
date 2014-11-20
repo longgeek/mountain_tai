@@ -1,1 +1,1 @@
-../docker_scheduler/api/docker_scheduler/docker_scheduler/settings.py
+../../telegraph_pole/telegraph_pole/settings.py
