@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 # Author: Longgeek <longgeek@gmail.com>
 
-from time import localtime, strftime
+from time import localtime
+from time import strftime
 
 from online.apphome import models
 from host import scheduler_host
@@ -10,7 +11,7 @@ from online.settings import DOCKER_SCHEDULER_CONN
 
 
 def get_containers(host_ip, host_port, size=False, quiet=False, all=False):
-    """ 获取 Docker 主机上的镜像
+    """获取 Docker 主机上的镜像
     Params:
         host_ip:   str;  Docker Host IP 地址
         host_port: str;  Docker Host 开放的端口号
@@ -24,13 +25,13 @@ def get_containers(host_ip, host_port, size=False, quiet=False, all=False):
          results) # results: 返回一台 Docker 主机上所有的容器列表
     """
     containers = DOCKER_SCHEDULER_CONN.containers(all=all,
-                                           size=size,
-                                           quiet=quiet)
+                                                  size=size,
+                                                  quiet=quiet)
     return (0, '', containers)
 
 
 def delete_containers(host_ip, host_port, status, container):
-    """ 获取 Docker 主机上的镜像
+    """获取 Docker 主机上的镜像
     Params:
         host_ip:   str;  Docker Host IP 地址
         host_port: str;  Docker Host 开放的端口号
@@ -49,7 +50,6 @@ def delete_containers(host_ip, host_port, status, container):
         return (1, msgs, '')
 
 
-
 def create_containers(user,
                       image,
                       flavor,
@@ -58,7 +58,7 @@ def create_containers(user,
                       host_ip=None,
                       command=None,
                       hostname=None):
-    """ 获取 Docker 主机上的镜像
+    """获取 Docker 主机上的镜像
     Params:
         user:     str;
         image:    object;

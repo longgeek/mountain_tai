@@ -1,4 +1,6 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns
+from django.conf.urls import url
+
 from rest_framework import routers
 
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -9,7 +11,8 @@ from views import views_hosts as views
 
 router = routers.DefaultRouter()
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
 
     url(r'^$',
         views.HostView.as_view()),
@@ -27,4 +30,4 @@ urlpatterns = patterns('',
         views.HostDeleteView.as_view()),
 )
 
-#urlpatterns = format_suffix_patterns(urlpatterns)
+# urlpatterns = format_suffix_patterns(urlpatterns)

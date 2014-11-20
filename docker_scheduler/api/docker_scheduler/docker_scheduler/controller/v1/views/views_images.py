@@ -2,15 +2,14 @@
 # -*- coding: utf-8 -*-
 # Author: Longgeek <longgeek@gmail.com>
 
-from django.http import Http404
-
+from django import http
 from docker_scheduler.apphome.models import Image
 
 from serializers import ImageSerializer
 
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import response
 
 
 class ImageView(APIView):
@@ -33,14 +32,14 @@ class ImageView(APIView):
 
             # 如果没有过滤出，或者参数传递错误，返回 404
             if not images:
-                raise Http404
+                raise http.Http404
 
         # 没有 url 参数，就返回所有的 Image
         else:
             images = Image.objects.all()
 
         serializer = ImageSerializer(images, many=True)
-        return Response(serializer.data)
+        return response.Response(serializer.data)
 
 
 class ImageCreateView(APIView):
@@ -55,8 +54,10 @@ class ImageCreateView(APIView):
         serializer = ImageSerializer(data=request.DATA)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return response.Response(serializer.data,
+                                     status=status.HTTP_201_CREATED)
+        return response.Response(serializer.errors,
+                                 status=status.HTTP_400_BAD_REQUEST)
 
 
 class ImageUpdateView(APIView):
@@ -71,15 +72,16 @@ class ImageUpdateView(APIView):
         try:
             return Image.objects.get(pk=pk)
         except Image.DoesNotExist:
-            raise Http404
+            raise http.Http404
 
     def put(self, request, pk, format=None):
         image = self.get_object(pk)
         serializer = ImageSerializer(image, data=request.DATA)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return response.Response(serializer.data)
+        return response.Response(serializer.errors,
+                                 status=status.HTTP_400_BAD_REQUEST)
 
 
 class ImageDeleteView(APIView):
@@ -94,12 +96,12 @@ class ImageDeleteView(APIView):
         try:
             return Image.objects.get(pk=pk)
         except Image.DoesNotExist:
-            raise Http404
+            raise http.Http404
 
     def delete(self, request, pk, format=None):
         image = self.get_object(pk)
         image.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ImageDetailView(APIView):
@@ -114,9 +116,9 @@ class ImageDetailView(APIView):
         try:
             return Image.objects.get(pk=pk)
         except Image.DoesNotExist:
-            raise Http404
+            raise http.Http404
 
     def get(self, request, pk, format=None):
         image = self.get_object(pk)
         serializer = ImageSerializer(image)
-        return Response(serializer.data)
+        return response.Response(serializer.data)

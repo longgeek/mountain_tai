@@ -1,1 +1,1 @@
-/root/docker-scheduler/docker_scheduler/api/docker_scheduler/docker_scheduler/settings.py
+../docker_scheduler/api/docker_scheduler/docker_scheduler/settings.py

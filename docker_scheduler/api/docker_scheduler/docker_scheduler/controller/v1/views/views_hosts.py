@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author: Longgeek <longgeek@gmail.com>
 
-from django.http import Http404
+from django import http
 
 from docker_scheduler.apphome.models import Host
 
@@ -10,7 +10,7 @@ from serializers import HostSerializer
 
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import response
 
 
 class HostView(APIView):
@@ -31,14 +31,14 @@ class HostView(APIView):
 
             # 如果没有过滤出，或者参数传递错误，返回 404
             if not hosts:
-                raise Http404
+                raise http.Http404
 
         # 没有 url 参数，就返回所有的 host
         else:
             hosts = Host.objects.all()
 
         serializer = HostSerializer(hosts, many=True)
-        return Response(serializer.data)
+        return response.Response(serializer.data)
 
 
 class HostCreateView(APIView):
@@ -53,8 +53,10 @@ class HostCreateView(APIView):
         serializer = HostSerializer(data=request.DATA)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return response.Response(serializer.data,
+                                     status=status.HTTP_201_CREATED)
+        return response.Response(serializer.errors,
+                                 status=status.HTTP_400_BAD_REQUEST)
 
 
 class HostUpdateView(APIView):
@@ -69,15 +71,16 @@ class HostUpdateView(APIView):
         try:
             return Host.objects.get(pk=pk)
         except Host.DoesNotExist:
-            raise Http404
+            raise http.Http404
 
     def put(self, request, pk, format=None):
         host = self.get_object(pk)
         serializer = HostSerializer(host, data=request.DATA)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return response.Response(serializer.data)
+        return response.Response(serializer.errors,
+                                 status=status.HTTP_400_BAD_REQUEST)
 
 
 class HostDeleteView(APIView):
@@ -92,12 +95,12 @@ class HostDeleteView(APIView):
         try:
             return Host.objects.get(pk=pk)
         except Host.DoesNotExist:
-            raise Http404
+            raise http.Http404
 
     def delete(self, request, pk, format=None):
         host = self.get_object(pk)
         host.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class HostDetailView(APIView):
@@ -112,9 +115,9 @@ class HostDetailView(APIView):
         try:
             return Host.objects.get(pk=pk)
         except Host.DoesNotExist:
-            raise Http404
+            raise http.Http404
 
     def get(self, request, pk, format=None):
         host = self.get_object(pk)
         serializer = HostSerializer(host)
-        return Response(serializer.data)
+        return response.Response(serializer.data)

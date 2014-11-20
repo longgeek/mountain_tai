@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 # Author: Longgeek <longgeek@gmail.com>
 
-import urls_hosts
-import urls_images
-import urls_flavors
-import urls_containers
+from django.conf.urls import patterns
+from django.conf.urls import include
+from django.conf.urls import url
 
-from django.conf.urls import patterns, include, url
+from docker_scheduler.controller.v1 import urls_hosts
+from docker_scheduler.controller.v1 import urls_images
+from docker_scheduler.controller.v1 import urls_flavors
+from docker_scheduler.controller.v1 import urls_containers
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^hosts/', include(urls_hosts)),
     url(r'^images/', include(urls_images)),
     url(r'^flavors/', include(urls_flavors)),

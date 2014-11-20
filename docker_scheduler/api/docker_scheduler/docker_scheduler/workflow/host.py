@@ -7,7 +7,7 @@ from online.apphome import models
 
 
 def check_host(ip, port):
-    """ 检测 Docker Host 是否开启
+    """检测 Docker Host 是否开启
     Params:
         ip:   str;    Docker Host IP 地址
         port: str;  Docker Host 开放的端口号
@@ -27,7 +27,7 @@ def check_host(ip, port):
 
 
 def scheduler_host():
-    """ Host 调度器
+    """Host 调度器
     Params:
         ip:   str;  Docker Host IP 地址
         port: str;  Docker Host 开放的端口号
@@ -42,11 +42,11 @@ def scheduler_host():
     if up_host:
         for host in up_host:
             # 拿到主机总的配置情况
-            #total_cpu = host.total_cpu
-            #total_mem = host.total_mem
-            #total_disk = host.total_disk
-            #total_volume = host.total_volume
-            #total_bandwidth = host.total_bandwidth
+            # total_cpu = host.total_cpu
+            # total_mem = host.total_mem
+            # total_disk = host.total_disk
+            # total_volume = host.total_volume
+            # total_bandwidth = host.total_bandwidth
 
             # 计算出这台主机上运行 Docker 容器的所有配置总和
             containers = models.db_Container.object.filter(host_ip=host)

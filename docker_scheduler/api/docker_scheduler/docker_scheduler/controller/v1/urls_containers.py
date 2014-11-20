@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 # Author: Longgeek <longgeek@gmail.com>
 
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns
+from django.conf.urls import url
 
 from views import views_containers as views
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$',
         views.ContainerView.as_view()),
 

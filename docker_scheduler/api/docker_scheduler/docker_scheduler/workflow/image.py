@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 # Author: Longgeek <longgeek@gmail.com>
 
-from time import localtime, strftime
+from time import localtime
+from time import strftime
 
 from online.settings import DOCKER_SCHEDULER_CONN
 
 
 def get_images(host_ip, host_port, user_id=None):
-    """ 获取 Docker 主机上的镜像
+    """获取 Docker 主机上的镜像
     Params:
         host_ip:   str;  Docker Host IP 地址
         host_port: str;  Docker Host 开放的端口号
@@ -62,7 +63,7 @@ def get_images(host_ip, host_port, user_id=None):
 
 
 def delete_images(host_ip, host_port, image, user_id=None):
-    """ 删掉 Docker 主机上的镜像
+    """删掉 Docker 主机上的镜像
     Params:
         host_ip:   str;  Docker Host IP 地址
         host_port: str;  Docker Host 开放的端口号

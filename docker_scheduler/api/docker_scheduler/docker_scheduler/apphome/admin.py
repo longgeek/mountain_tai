@@ -1,7 +1,9 @@
 from django.contrib import admin
-import models
+from models import Image
+from models import Host
+from models import Container
 # Register your models here.
 
-admin.site.register(models.Image)
-admin.site.register(models.Host)
-admin.site.register(models.Container)
+admin.site.register(Image)
+admin.site.register(Host)
+admin.site.register(Container)
