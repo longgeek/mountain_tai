@@ -14,11 +14,24 @@ from rest_framework import response
 
 
 class HostView(APIView):
-    """列出所有的主机或, 根据 url 参数过滤出相应的主机;
+    """列出所有的主机
 
-    路径:
-       GET /hosts/ HTTP/1.1
-       Content-Type: application/json
+    Info:
+        GET /hosts/ HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        - GET /hosts/ HTTP/1.1
+        - GET /hosts/?ip=192.168.8.1&port=2375& ...... HTTP/1.1
+
+    Query Parameters:
+        ip port image status total_cpu total_mem
+        total_sys_disk total_volume total_bandwidth
+
+    Status Codes:
+        200 - no error
+        404 - no such container
+        500 - server error
     """
 
     def get(self, request, format=None):
@@ -42,11 +55,18 @@ class HostView(APIView):
 
 
 class HostCreateView(APIView):
-    """创建一个主机, 重新定义 post 请求
+    """创建一个主机
 
-    路径:
-       POST /hosts/create HTTP/1.1
-       Content-Type: application/json
+    Info:
+        POST /hosts/create HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        POST /hosts/create HTTP/1.1
+
+    Json Parameters:
+        ip port image status total_cpu total_mem
+        total_sys_disk total_volume total_bandwidth
     """
 
     def post(self, request, format=None):
@@ -60,11 +80,18 @@ class HostCreateView(APIView):
 
 
 class HostUpdateView(APIView):
-    """更新一个主机, 重新定义 put 请求
+    """更新一个主机
 
-    路径:
-       PUT /hosts/(pk)/update HTTP/1.1
-       Content-Type: application/json
+    Info:
+        PUT /hosts/(pk)/update HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        PUT /hosts/2/update HTTP/1.1
+
+    Json Parameters:
+        ip port image status total_cpu total_mem
+        total_sys_disk total_volume total_bandwidth
     """
 
     def get_object(self, pk):
@@ -84,11 +111,14 @@ class HostUpdateView(APIView):
 
 
 class HostDeleteView(APIView):
-    """删除一个主机, 重新定义 delete 请求
+    """删除一个主机
 
-    路径:
-       DELETE /hosts/(id)/delete HTTP/1.1
-       Content-Type: application/json
+    Info:
+        DELETE /hosts/(pk)/delete HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        DELETE /host/2/delete HTTP/1.1
     """
 
     def get_object(self, pk):
@@ -104,11 +134,14 @@ class HostDeleteView(APIView):
 
 
 class HostDetailView(APIView):
-    """根据 pk 获取主机信息, 重新定义 get 请求
+    """根据 pk 获取主机信息
 
-    路径:
-       GET /hosts/(id)/ HTTP/1.1
-       Content-Type: application/json
+    Info:
+        GET /hosts/(id)/ HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        GET /hosts/2/ HTTP/1.1
     """
 
     def get_object(self, pk):

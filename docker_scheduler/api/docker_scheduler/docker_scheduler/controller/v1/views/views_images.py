@@ -13,12 +13,24 @@ from rest_framework import response
 
 
 class ImageView(APIView):
-    """列出所有镜像，或者根据 url 参数进行过滤,
-       重新定义 get 请求
+    """列出所有镜像
 
-    路径:
-       GET /images/ HTTP/1.1
-       Content-Type: application/json
+    Info:
+        GET /images/ HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        - GET /images/ HTTP/1.1
+        - GET /images/?iid=0a8fb585b&repository=ubuntu&tag=12.04 ... HTTP/1.1
+
+    Query Parameters:
+        iid tag created repository virtual_size
+        os_type os_version
+
+    Status Codes:
+        200 - no error
+        404 - no such image
+        500 - server error
     """
 
     def get(self, request, format=None):
@@ -43,11 +55,18 @@ class ImageView(APIView):
 
 
 class ImageCreateView(APIView):
-    """创建一个镜像, 重新定义 post 请求
+    """创建一个镜像
 
-    路径:
-       POST /images/create HTTP/1.1
-       Content-Type: application/json
+    Info:
+        POST /images/create HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        POST /images/create HTTP/1.1
+
+    Json Parameters:
+        iid tag created repository virtual_size
+        os_type os_version
     """
 
     def post(self, request, format=None):
@@ -61,11 +80,18 @@ class ImageCreateView(APIView):
 
 
 class ImageUpdateView(APIView):
-    """更新一个镜像, 重新定义 put 请求
+    """更新一个镜像
 
-    路径:
-       PUT /images/(pk)/update HTTP/1.1
-       Content-Type: application/json
+    Info:
+        PUT /images/(pk)/update HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        PUT /images/2/update HTTP/1.1
+
+    Json Parameters:
+        iid tag created repository virtual_size
+        os_type os_version
     """
 
     def get_object(self, pk):
@@ -85,11 +111,14 @@ class ImageUpdateView(APIView):
 
 
 class ImageDeleteView(APIView):
-    """删除一个镜像, 重新定义 delete 请求
+    """删除一个镜像
 
-    路径:
-       DELETE /images/(pk)/delete HTTP/1.1
-       Content-Type: application/json
+    Info:
+        DELETE /images/(pk)/delete HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        DELETE /images/2/delete HTTP/1.1
     """
 
     def get_object(self, pk):
@@ -105,11 +134,14 @@ class ImageDeleteView(APIView):
 
 
 class ImageDetailView(APIView):
-    """根据 pk 获取镜像, 重新定义 get 请求
+    """根据 pk 获取镜像
 
-    路径:
-       get /images/(pk)/ HTTP/1.1
-       Content-Type: application/json
+    Info:
+        GET /images/(pk)/ HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        GET /images/2/ HTTP/1.1
     """
 
     def get_object(self, pk):

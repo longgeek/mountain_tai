@@ -14,11 +14,25 @@ from rest_framework.response import Response
 
 
 class ContainerView(APIView):
-    """列出所有的主机或, 根据 url 参数过滤出相应的主机;
+    """列出所有的容器
 
-    路径:
-       GET /containers/ HTTP/1.1
-       Content-Type: application/json
+    Info:
+        GET /containers/ HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        - GET /containers/ HTTP/1.1
+        - GET /containers/?cid=390e90e34656806&host=192.168.8.1&... HTTP/1.1
+
+    Query Parameters:
+
+        cid name host size ports image status
+        user_id command created hostname flavor_id
+
+    Status Codes:
+        200 - no error
+        404 - no such container
+        500 - server error
     """
 
     def get(self, request, format=None):
@@ -43,11 +57,18 @@ class ContainerView(APIView):
 
 
 class ContainerCreateView(APIView):
-    """创建一个容器, 重新定义 post 请求
+    """创建一个容器
 
-    路径:
-       POST /containers/create HTTP/1.1
-       Content-Type: application/json
+    Info:
+        POST /containers/create HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        POST /containers/create HTTP/1.1
+
+    Json Parameters:
+        cid name host size ports image status
+        user_id command created hostname flavor_id
     """
 
     def post(self, request, format=None):
@@ -59,11 +80,18 @@ class ContainerCreateView(APIView):
 
 
 class ContainerUpdateView(APIView):
-    """更新一个容器, 重新定义 put 请求
+    """更新一个容器
 
-    路径:
-       PUT /containers/(cid)/update HTTP/1.1
-       Content-Type: application/json
+    Info:
+        PUT /containers/(cid)/update HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        PUT /containers/390e90e34656806/update HTTP/1.1
+
+    Jons Parameters:
+        cid name host size ports image status
+        user_id command created hostname flavor_id
     """
 
     def get_object(self, pk):
@@ -82,11 +110,14 @@ class ContainerUpdateView(APIView):
 
 
 class ContainerDeleteView(APIView):
-    """删除一个容器, 重新定义 delete 请求
+    """删除一个容器
 
-    路径:
-       DELETE /containers/(cid)/delete HTTP/1.1
-       Content-Type: application/json
+    Info:
+        DELETE /containers/(cid)/delete HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        DELETE /containers/390e90e34656806/delete HTTP/1.1
     """
 
     def get_object(self, pk):
@@ -102,11 +133,14 @@ class ContainerDeleteView(APIView):
 
 
 class ContainerDetailView(APIView):
-    """根据 pk 获取主机信息, 重新定义 get 请求
+    """根据容器 id 获取数据库中容器信息
 
-    路径:
-       get /containers/(pk)/ HTTP/1.1
-       Content-Type: application/json
+    Info:
+        GET /containers/(cid)/ HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        GET /containers/390e90e34656806 HTTP/1.1
     """
 
     def get_object(self, pk):
@@ -119,3 +153,54 @@ class ContainerDetailView(APIView):
         container = self.get_object(pk)
         serializer = ContainerSerializer(container)
         return Response(serializer.data)
+
+
+class ContainerStopView(APIView):
+    """停止一个容器
+
+    Info:
+        POST /containers/(cid)/stop HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        POST /containers/e90e34656806/stop?t=5 HTTP/1.1
+
+    Query Parameters:
+        t – number of seconds to wait before killing the container
+    """
+
+    def post(self, request, pk, format=None):
+        serializer = ContainerSerializer(data=request.DATA)
+        return Response(serializer.data, status=status.HTTP_304_NOT_MODIFIED)
+
+
+class ContainerStartView(APIView):
+    """启动一个容器
+
+    Info:
+        POST /containers/(cid)/start HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        POST /containers/e90e34656806/start HTTP/1.1
+    """
+
+    def post(self, request, pk, format=None):
+        serializer = ContainerSerializer(data=request.DATA)
+        return Response(serializer.data, status=status.HTTP_304_NOT_MODIFIED)
+
+
+class ContainerReStartView(APIView):
+    """重启一个容器
+
+    Info:
+        POST /containers/(cid)/restart HTTP/1.1
+        Content-Type: application/json
+
+    Example request:
+        POST /containers/e90e34656806/restart HTTP/1.1
+    """
+
+    def post(self, request, pk, format=None):
+        serializer = ContainerSerializer(data=request.DATA)
+        return Response(serializer.data, status=status.HTTP_304_NOT_MODIFIED)
