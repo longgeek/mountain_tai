@@ -74,6 +74,24 @@ def create_container(user,
             continue
     return (1, 'All host full', '')
 
+
+def delete_container(deleteid=None):
+    if deleteid:
+        try:
+            containerobject = models.Container.objects.get(id=int(deleteid))
+            containerid = containerobject.cid
+            host = containerobject.host
+            cli = docker.Client(
+                base_url="tcp://" + host.ip + ":" + host.port)
+            cli.stop(containerid)
+            cli.remove_container(containerid)
+            containerobject.delete()
+            return (0, 'delete success', '')
+        except:
+            return (2, 'the container is not existed or is invalid!', '')
+    else:
+        return (1, 'please gave the id of container to delete', '')
+
 if __name__ == "__main__":
     image = models.Image.objects.all()[0]
     print create_container(user='1',
