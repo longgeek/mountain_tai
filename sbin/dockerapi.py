@@ -92,6 +92,57 @@ def delete_container(deleteid=None):
     else:
         return (1, 'please gave the id of container to delete', '')
 
+
+def stop_container(containerid=None):
+    if containerid:
+        try:
+            containerobject = models.Container.objects.get(id=int(containerid))
+            cid = containerobject.cid
+            host = containerobject.host
+            cli = docker.Client(
+                base_url="tcp://" + host.ip + ":" + host.port)
+            cli.stop(cid)
+            return (0, 'stop success', '')
+        except:
+            return (2, 'the container is not existed or is invalid!', '')
+
+    else:
+        return (1, 'please gave the id of container to stop', '')
+
+
+def start_container(containerid=None):
+    if containerid:
+        try:
+            containerobject = models.Container.objects.get(id=int(containerid))
+            cid = containerobject.cid
+            host = containerobject.host
+            cli = docker.Client(
+                base_url="tcp://" + host.ip + ":" + host.port)
+            cli.start(cid)
+            return (0, 'start success', '')
+        except:
+            return (2, 'the container is not existed or is invalid!', '')
+
+    else:
+        return (1, 'please gave the id of container to start', '')
+
+
+def restart_container(containerid=None):
+    if containerid:
+        try:
+            containerobject = models.Container.objects.get(id=int(containerid))
+            cid = containerobject.cid
+            host = containerobject.host
+            cli = docker.Client(
+                base_url="tcp://" + host.ip + ":" + host.port)
+            cli.restart(cid)
+            return (0, 'restart success', '')
+        except:
+            return (2, 'the container is not existed or is invalid!', '')
+
+    else:
+        return (1, 'please gave the id of container to restart', '')
+
 if __name__ == "__main__":
     image = models.Image.objects.all()[0]
     print create_container(user='1',
