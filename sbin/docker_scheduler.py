@@ -48,11 +48,30 @@ while True:
                     if dbc in containers:
                         containers.remove(dbc)
                     else:
+                        conid = dbc['Id']
                         dbcobject = models.Container.objects.get(cid=dbc['Id'])
-                        dbcobject.delete()
+                        contobject = [cont for cont in containers
+                                      if cont['Id'] == conid]
+                        if contobject:
+                            dbc = contobject[0]
+                            imageinfo = dbc['Image'].split(":")
+                            imageobject = models.Image.objects\
+                                .get(repository=imageinfo[0], tag=imageinfo[1])
+                            name = ' '.join(dbc['Names'])
+                            dbcobject.size = dbc['SizeRw']
+                            dbcobject.image = imageobject
+                            dbcobject.host = host
+                            dbcobject.name = name
+                            dbcobject.command = dbc['Command']
+                            dbcobject.created = dbc['Created']
+                            dbcobject.status = dbc['Status']
+                            dbcobject.save()
+                            containers.remove(contobject[0])
+                        else:
+                            dbcobject.delete()
                 for container in containers:
                     imageinfo = container['Image'].split(":")
-                    imageobject = models.Image.objects \
+                    imageobject = models.Image.objects\
                         .get(repository=imageinfo[0], tag=imageinfo[1])
                     name = ' '.join(container['Names'])
                     containernew = models.Container(
