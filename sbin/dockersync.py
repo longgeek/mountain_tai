@@ -3,7 +3,8 @@
 
 # from docker_scheduler import container
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "setting")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE",
+                      "docker_scheduler.lib.dockerconfig.setting")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
@@ -11,8 +12,6 @@ application = get_wsgi_application()
 import models
 from docker import Client
 import time
-import django
-django.setup()
 hostlist = models.Host.objects.all()
 lasttime = int(time.time())
 while True:

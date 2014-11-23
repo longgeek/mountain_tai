@@ -1,1 +1,0 @@
-../../telegraph_pole/telegraph_pole/settings.py
