@@ -5,50 +5,49 @@
 from kombu import Connection, Exchange, Queue
 import dockerapi
 
+from settings import RABBITMQ_URLS
 
 actiontype = 'create_container'
 types = {
     'create_container': {
-        'queue_name': 'create_container_queue',
-        'router_key': 'create_container_router',
-        'exchange_name': 'create_container_exchange',
+        'queue_name': 'create-container-queue',
+        'router_key': 'create.container.router',
+        'exchange_name': 'container',
     },
     'start_container': {
-        'queue_name': 'start_container_queue',
-        'router_key': 'start_container_router',
-        'exchange_name': 'start_container_exchange',
+        'queue_name': 'start-container-queue',
+        'router_key': 'start.container.router',
+        'exchange_name': 'container',
     },
     'stop_container': {
-        'queue_name': 'stop_container_queue',
-        'router_key': 'stop_container_router',
-        'exchange_name': 'stop_container_exchange',
+        'queue_name': 'stop-container-queue',
+        'router_key': 'stop.container.router',
+        'exchange_name': 'container',
     },
     'restart_container': {
-        'queue_name': 'restart_container_queue',
-        'router_key': 'restart_container_router',
-        'exchange_name': 'restart_container_exchange',
+        'queue_name': 'restart-container-queue',
+        'router_key': 'restart.container.router',
+        'exchange_name': 'container',
     },
     'delete_container': {
-        'queue_name': 'delete_container_queue',
-        'router_key': 'delete_container_router',
-        'exchange_name': 'delete_container_exchange',
+        'queue_name': 'delete-container-queue',
+        'router_key': 'delete.container.router',
+        'exchange_name': 'container',
     },
 }
 
-
 queue_name = types[actiontype]['queue_name']
-print queue_name
 router_key = types[actiontype]['router_key']
 exchange_name = types[actiontype]['exchange_name']
 exchange = Exchange(exchange_name,
-                    'direct',
+                    type='topic',
                     durable=True)
 queue = Queue(queue_name,
               exchange=exchange,
               routing_key=router_key)
 
 
-def process_media(body, message):
+def action(body, message):
 
     print body
     user = body.get('user_id')
@@ -67,13 +66,11 @@ def process_media(body, message):
         command=command,
         hostname=hostname
     )
-
-    # print body
     message.ack()
 
 # connections
-with Connection('amqp://guest:guest@192.168.8.239:5672//') as conn:
+with Connection(RABBITMQ_URLS) as conn:
     # consume
-    with conn.Consumer(queue, callbacks=[process_media]) as consumer:
+    with conn.Consumer(queue, callbacks=[action]) as consumer:
         while True:
             conn.drain_events()
