@@ -69,7 +69,7 @@ class Container(models.Model):
     image = models.ForeignKey(Image)
     user_id = models.CharField(max_length=25)
     host = models.ForeignKey(Host, null=True, blank=True)
-    name = models.CharField(max_length=20, null=True, blank=True)
+    name = models.CharField(max_length=80, null=True, blank=True)
     command = models.CharField(max_length=200, null=True, blank=True)
     created = models.CharField(max_length=40, null=True, blank=True)
     status = models.CharField(max_length=40, null=True, blank=True)

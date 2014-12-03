@@ -4,7 +4,7 @@
 
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE",
-                      "docker_scheduler.lib.dockerconfig.setting")
+                      "mountain_tai.config")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 import pika
@@ -12,7 +12,7 @@ import uuid
 import multiprocessing
 import threading
 import simplejson as json
-from docker_scheduler.lib import schedulerapi
+from mountain_tai.lib import api
 
 MQ_HOST = '192.168.8.8'
 MQ_PORT = 5672
@@ -56,7 +56,7 @@ class Send(object):
 
     # 定义接收到返回消息的处理方法
     def on_response(self, channel, method, props, body):
-        print 'message from frazy: ', body
+        api.updatedockerdb(body)
         self.response[props.correlation_id] = body
 
     def request(self, body):
@@ -115,10 +115,9 @@ class Center(object):
             2. 然后给docker_scheduler返回消息
         """
         send = Send()
-        (status, msgs, resultdic) = schedulerapi.scheduler_docker(body)
-        # print status, msgs, results
+        (status, msgs, resultdic) = api.scheduler_docker(body)
+        print status, msgs, resultdic
         response = send.request(json.dumps(resultdic))
-        # response = send.request(body)
 
         ch.basic_publish(exchange='',
                          routing_key=props.reply_to,
@@ -127,8 +126,6 @@ class Center(object):
                          ),
                          body=response)
         ch.basic_ack(delivery_tag=method.delivery_tag)
-
-        print '---------------\n'
 
 
 class MyThread(threading.Thread):

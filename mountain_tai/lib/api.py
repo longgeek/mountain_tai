@@ -46,22 +46,19 @@ def create_container(body):
         image=image,
     )
     body.pop('image')
-    body.pop('flavor_id')
     body.pop('host')
     resultdic = dict(body.items() + hostdic[2].items())
     return (0, '', resultdic)
 
 
 def schedulerdocker(body):
-    print body
-    body = json.loads(body)
     containerid = body.get("id")
     if containerid:
         containerobject = models.Container.objects.get(id=int(containerid))
         cid = containerobject.cid
         host = containerobject.host.ip
         port = containerobject.host.port
-        rdic = {'containerid': cid, 'host': host, 'port': port}
+        rdic = {'cid': cid, 'host': host, 'port': port}
         body.pop('id')
         resultdic = dict(body.items() + rdic.items())
         return (0, '', resultdic)
@@ -72,9 +69,14 @@ def schedulerdocker(body):
 def scheduler_docker(body):
     body = json.loads(body)
     action = body.get('message_type')
+
     if action == "create_container":
         return create_container(body)
     elif action:
         return schedulerdocker(body)
     else:
         return (1, 'please point the message_type', '')
+
+
+def updatedockerdb(body):
+    print 'update dockerdb', type(body), body

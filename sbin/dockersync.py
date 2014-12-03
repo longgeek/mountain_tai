@@ -4,12 +4,12 @@
 # from docker_scheduler import container
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE",
-                      "docker_scheduler.lib.dockerconfig.setting")
+                      "mountain_tai.config")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-import models
+from mountain_tai.lib import models
 from docker import Client
 import time
 hostlist = models.Host.objects.all()
