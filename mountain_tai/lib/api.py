@@ -125,7 +125,7 @@ def updatedockerdb(body):
         else:
             containerobject.status = result.get('status')
             containerobject.save()
-        return (0, '', 'success')
+        return (0, '', result)
     else:
         action = msgs.get('message_type')
         if action == "create_container":
