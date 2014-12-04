@@ -129,6 +129,7 @@ def updatedockerdb(body):
     else:
         action = msgs.get('message_type')
         if action == "create_container":
+            containerid = msgs.get('id')
             containerobject = models.Container.objects.get(id=int(containerid))
             containerobject.delete()
         return status, msgs.get('error'), result
