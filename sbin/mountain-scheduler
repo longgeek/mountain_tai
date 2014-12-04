@@ -57,7 +57,7 @@ class Send(object):
     # 定义接收到返回消息的处理方法
     def on_response(self, channel, method, props, body):
         updatestatus = api.updatedockerdb(body)
-        self.response[props.correlation_id] = updatestatus 
+        self.response[props.correlation_id] = json.dumps(updatestatus) 
 
     def request(self, body):
         corr_id = str(uuid.uuid4())
