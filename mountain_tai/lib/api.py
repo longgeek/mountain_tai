@@ -73,7 +73,11 @@ def create_container(body):
 def schedulerdocker(body):
     containerid = body.get("id")
     if containerid:
-        containerobject = models.Container.objects.get(id=int(containerid))
+        try:
+            containerobject = models.Container.objects.get(id=int(containerid))
+        except:
+            return (1, 'the id is not exist or have more than one value', '')
+
         cid = containerobject.cid
         host = containerobject.host.ip
         port = containerobject.host.port
@@ -97,6 +101,7 @@ def scheduler_docker(body):
 
 
 def updatedockerdb(body):
+    print body
     status, msgs, result = json.loads(body)
     if status == 0:
         action = result.get('message_type')
@@ -118,8 +123,10 @@ def updatedockerdb(body):
         else:
             containerobject.status = result.get('status')
             containerobject.save()
+        return (0, '', 'success')
     else:
-        containerid = body.get('id')
-        containerobject = models.Container.objects.get(id=int(containerid))
-        containerobject.delete()
-        return status, msgs, result
+        action = msgs.get('message_type')
+        if action == "create_container":
+            containerobject = models.Container.objects.get(id=int(containerid))
+            containerobject.delete()
+        return status, msgs.get('error'), result
