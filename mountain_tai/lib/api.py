@@ -29,8 +29,10 @@ def scheduler_host(flavor, image):
             else:
                 image_name = image.iid
             resultdic = {'host': hostip,
+                         'hostobject': host,
                          'hostport': hostport,
                          'image_name': image_name,
+                         'image': image,
                          'flavor': newflavor}
             return (0, '', resultdic)
         else:
@@ -45,9 +47,26 @@ def create_container(body):
         flavor=flavor,
         image=image,
     )
+    if hostdic[0] == 0:
+        hostdic = hostdic[2]
+    else:
+        return hostdic
+    containerobject = models.Container(
+        flavor_id=flavor,
+        image=hostdic.get("image"),
+        user_id=body.get('user_id'),
+        host=hostdic.get('hostobject'),
+    )
+    containerobject.save()
     body.pop('image')
     body.pop('host')
-    resultdic = dict(body.items() + hostdic[2].items())
+    body.pop('flavor_id')
+
+    hostdic.pop('image')
+    hostdic.pop('hostobject')
+
+    hostdic['id'] = containerobject.id
+    resultdic = dict(body.items() + hostdic.items())
     return (0, '', resultdic)
 
 
@@ -59,7 +78,6 @@ def schedulerdocker(body):
         host = containerobject.host.ip
         port = containerobject.host.port
         rdic = {'cid': cid, 'host': host, 'port': port}
-        body.pop('id')
         resultdic = dict(body.items() + rdic.items())
         return (0, '', resultdic)
     else:
@@ -79,4 +97,29 @@ def scheduler_docker(body):
 
 
 def updatedockerdb(body):
-    print 'update dockerdb', type(body), body
+    status, msgs, result = json.loads(body)
+    if status == 0:
+        action = result.get('message_type')
+        containerid = result.get('id')
+        containerobject = models.Container.objects.get(id=int(containerid))
+        if action == "create_container":
+            containerobject.cid = result.get('cid')
+            containerobject.size = result.get('size')
+            containerobject.name = result.get('name')
+            containerobject.command = result.get('command')
+            containerobject.created = result.get('created')
+            containerobject.status = result.get('status')
+            containerobject.ports = result.get('ports')
+            containerobject.hostname = result.get('hostname')
+            containerobject.create_status = True
+            containerobject.save()
+        elif action == "delete_container":
+            containerobject.delete()
+        else:
+            containerobject.status = result.get('status')
+            containerobject.save()
+    else:
+        containerid = body.get('id')
+        containerobject = models.Container.objects.get(id=int(containerid))
+        containerobject.delete()
+        return status, msgs, result

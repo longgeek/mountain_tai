@@ -32,7 +32,7 @@ while True:
                     host.status = True
                     host.save()
                 dbcon = models.Container.objects\
-                    .filter(host=host).order_by("created")
+                    .filter(host=host, create_status=True).order_by("created")
                 dbcontainers = [{u'Status': container.status,
                                  u'Created': int(container.created),
                                  u'Image': container.image.repository +
@@ -85,7 +85,8 @@ while True:
                         created=container['Created'],
                         status=container['Status'],
                         ports=' '.join(container['Ports']),
-                        hostname='localhost')
+                        hostname='localhost',
+                        create_status=True)
                     containernew.save()
         lasttime = nowtime
     time.sleep(0.2)

@@ -115,8 +115,8 @@ class Center(object):
             2. 然后给docker_scheduler返回消息
         """
         send = Send()
+        print 'come from restful', body
         (status, msgs, resultdic) = api.scheduler_docker(body)
-        print status, msgs, resultdic
         response = send.request(json.dumps(resultdic))
 
         ch.basic_publish(exchange='',
