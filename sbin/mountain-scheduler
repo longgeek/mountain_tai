@@ -118,7 +118,7 @@ class Center(object):
         print 'come from restful', body
         resultdic = api.scheduler_docker(body)
         if resultdic[0] == 0:
-            response = send.request(json.dumps(resultdic))
+            response = send.request(json.dumps(resultdic[2]))
         else:
             response = json.dumps(resultdic) 
 
