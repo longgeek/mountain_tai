@@ -8,7 +8,7 @@ import models
 def scheduler_host(flavor, image):
     """ scheduler host
 
-    Based on falvor_id and image_dbid to return the information about
+    Base on falvor_id and image_dbid to return the information about
     flavor, image and the docker host to create container
 
     Author: Frazy Lee
@@ -78,6 +78,53 @@ def scheduler_host(flavor, image):
 
 
 def create_container(body):
+    """ return info about container to create
+
+    get data from body and return information that will used to create
+    container
+
+    Author: Frazy Lee
+    Author Email: frazy@thstack.com
+
+    Params:
+        body: DICT # the data receive from mq
+
+    Return:( # 返回值
+        status: INT, # execute status 0/Success, -1/other-Fault
+        msgs: STRING, # the error message, when excecute fault
+        results: DICT, # excecute result
+
+    )
+
+    Results Format:{
+        'status': u'', # the container status, when the container create
+                         successful,this field will update
+        'user_id': '2', # the user id who create this container
+        'name': u'', # the name of the container, when the container create
+                       successful,this field will update
+        'created': u'', # the created of the new container, when the container
+                          create successful,this field will update
+        'hostname': u'', # the hostname of the new container, when the
+                           container create successful,this field will update
+        'image_name': u'ubuntu:latest', # the name of image that used to create
+                                          the new container
+        'id': 10L, # the new container db note, but the status is False
+        'host': u'127.0.0.1', # the docker server ip
+        'cid': u'', # the new container id, when the container create
+                      successful,this field will update
+        'command': u'', # the command of the new container
+        'hostport': u'2375', # the docker server port
+        'flavor':{
+            'name': 'tiny',
+            'mem': 128,
+            'volume': 0,
+            'bandwidth': 512,
+            'sys_disk': 5120,
+            'cpu': 1
+        } # the detail info about flavor
+    }
+    """
+
     flavor = body.get('flavor_id')
     image = body.get('image')
     hostdic = scheduler_host(
@@ -108,6 +155,32 @@ def create_container(body):
 
 
 def schedulerdocker(body):
+    """ scheduler the container docker
+
+    Get the docker host and port via the continer dbid
+
+    Author: Frazy Lee
+    Author Email: frazy@thstack.com
+
+    Params:
+        body: DICT # the data receive from mq, comprise with message_type
+                     and container id
+
+    Return:( # 返回值
+        status: INT, # execute status 0/Success, -1/other-Fault
+        msgs: STRING, # the error message, when excecute fault
+        results: DICT, # excecute result
+    )
+
+    Results Format:{
+        'host': u'127.0.0.1', # docker server ip
+        'port': u'2375', # docker server port
+        'cid': u'fbb29d13f350e19cc8ee246f11295...', # container id
+        'message_type': 'restart_container', # operate type
+        'id': '9' # container db id
+    }
+    """
+
     containerid = body.get("id")
     if containerid:
         try:
@@ -128,6 +201,28 @@ def schedulerdocker(body):
 
 
 def scheduler_docker(body):
+    """ scheduler docker main function
+
+    base on message_type to return create_container function or other
+    message_type function
+
+    Author: Frazy Lee
+    Author Email: frazy@thstack.com
+
+    Params:
+        body: DICT # the data receive from mq, comprise with message_type
+                     and container id
+
+    Return:( # 返回值
+        status: INT, # execute status 0/Success, -1/other-Fault
+        msgs: STRING, # the error message, when excecute fault
+        results: DICT, # excecute result
+    )
+
+    Results Format:
+       base on function create_container and schedulerdocker
+    """
+
     body = json.loads(body)
     action = body.get('message_type')
 
@@ -140,6 +235,26 @@ def scheduler_docker(body):
 
 
 def updatedockerdb(body):
+    """ update docker db
+
+    update docker db via the container operation result
+
+    Author: Frazy Lee
+    Author Email: frazy@thstack.com
+
+    Params:
+        body: DICT # the data receive from mq, the container operation result
+
+    Return:( # 返回值
+        status: INT, # execute status 0/Success, -1/other-Fault
+        msgs: STRING, # the error message, when excecute fault
+        results: DICT, # excecute result
+    )
+
+    Results Format:
+        the operation result
+    """
+
     print body
     status, msgs, result = json.loads(body)
     if status == 0:
