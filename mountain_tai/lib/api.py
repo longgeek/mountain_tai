@@ -37,7 +37,7 @@ def scheduler_host(flavor, image):
             return (0, '', resultdic)
         else:
             continue
-    return (1, 'All host full', '')
+    return (1, 'Error: All of the Docker host is not idle resources!', '')
 
 
 def create_container(body):
@@ -76,7 +76,9 @@ def schedulerdocker(body):
         try:
             containerobject = models.Container.objects.get(id=int(containerid))
         except:
-            return (1, 'the id is not exist or have more than one value', '')
+            return (1,
+                    'Error: The id is not exist or have more than one value!',
+                    '')
 
         cid = containerobject.cid
         host = containerobject.host.ip
@@ -85,7 +87,7 @@ def schedulerdocker(body):
         resultdic = dict(body.items() + rdic.items())
         return (0, '', resultdic)
     else:
-        return (1, 'please point the container id', '')
+        return (1, 'Error: Please point the container id!', '')
 
 
 def scheduler_docker(body):
@@ -97,7 +99,7 @@ def scheduler_docker(body):
     elif action:
         return schedulerdocker(body)
     else:
-        return (1, 'please point the message_type', '')
+        return (1, 'Error: Please point the message_type!', '')
 
 
 def updatedockerdb(body):
