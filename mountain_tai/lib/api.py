@@ -6,6 +6,43 @@ import models
 
 
 def scheduler_host(flavor, image):
+    """ scheduler host
+
+    Based on falvor_id and image_dbid to return the information about
+    flavor, image and the docker host to create container
+
+    Author: Frazy Lee
+    Author Email: frazy@thstack.com
+
+    Params:
+        flavor: int # flavor_id that define in models
+        image: int # image dbid
+
+    Return:( # 返回值
+        status: INT, # execute status 0/Success, -1/other-Fault
+        msgs: STRING, # the error message, when excecute fault
+        results: DICT, # excecute result
+
+    )
+
+    Results Format:{
+        'hostobject': <Host: Host object>, # Host object
+        'image': <Image: Image object>, # Image object
+        'image_name':  u'ubuntu:latest', # The name of iamge
+        'host': u'127.0.0.1', # the docker host which will used to create new
+                                container
+        'port': u'2375', # the port of docker server
+        'flavor':{
+            'name': 'tiny',
+            'mem': 128,
+            'volume': 0,
+            'bandwidth': 512,
+            'sys_disk': 5120,
+            'cpu': 1
+        } # the detail info about flavor
+    }
+    """
+
     hostlist = models.Host.objects.all()
     image = models.Image.objects.get(id=int(image))
     newflavor = models.Flavor[flavor]
