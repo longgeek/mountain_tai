@@ -1,12 +1,14 @@
 # from settings import DATABASES
 # from settings import SECRET_KEY
+import redis
 SECRET_KEY = '6vv0xbhmm(02ru1t*ztb-499^gnn_nrwc-is1^sv#j%ki*c9cw'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db.sqlite3',
-        'NAME': 'telegraph_pole',
-        'HOST': '192.168.8.231',
+        'NAME': 'docker',
+        'HOST': '127.0.0.1',
         'USER': 'root',
+        'PASSWORD': '123123',
     }
 }
+rediscon = redis.Redis(host="127.0.0.1", port=6379, db=0)

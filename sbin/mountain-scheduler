@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author: Longgeek <longgeek@gmail.com>
+# Author: Frazy <baoyiluo@gmail.com>
 
 import os
+import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE",
                       "mountain_tai.config")
 from django.core.wsgi import get_wsgi_application
@@ -13,14 +14,9 @@ import multiprocessing
 import threading
 import simplejson as json
 from mountain_tai.lib import api
+import ConfigParser
 
-MQ_HOST = '192.168.8.8'
-MQ_PORT = 5672
-QUEUE_DOCKER_SCHEDULER = 'docker_scheduler'
-QUEUE_DOCKER_TASK = 'docker_task'
-
-WORKERS = 8
-PROCESS_PER_WORKER = 300
+CONFIG_FILE = '/etc/mountain/mountain.conf'  # config file
 
 
 class Send(object):
@@ -57,7 +53,7 @@ class Send(object):
     # 定义接收到返回消息的处理方法
     def on_response(self, channel, method, props, body):
         updatestatus = api.updatedockerdb(body)
-        self.response[props.correlation_id] = json.dumps(updatestatus) 
+        self.response[props.correlation_id] = json.dumps(updatestatus)
 
     def request(self, body):
         corr_id = str(uuid.uuid4())
@@ -120,7 +116,7 @@ class Center(object):
         if resultdic[0] == 0:
             response = send.request(json.dumps(resultdic[2]))
         else:
-            response = json.dumps(resultdic) 
+            response = json.dumps(resultdic)
 
         ch.basic_publish(exchange='',
                          routing_key=props.reply_to,
@@ -143,6 +139,22 @@ class MyThread(threading.Thread):
 
 
 if __name__ == "__main__":
+
+    try:
+        config = ConfigParser.ConfigParser()
+        cfgfile = open(CONFIG_FILE, 'r')
+        config.readfp(cfgfile)
+        MQ_HOST = config.get('mountain', 'MQ_HOST')
+        MQ_PORT = int(config.get('mountain', 'MQ_PORT'))
+        QUEUE_DOCKER_SCHEDULER = config.get('mountain',
+                                            'QUEUE_DOCKER_SCHEDULER')
+        QUEUE_DOCKER_TASK = config.get('mountain', 'QUEUE_DOCKER_TASK')
+        WORKERS = int(config.get('mountain', 'WORKERS'))
+        PROCESS_PER_WORKER = int(config.get('mountain', 'PROCESS_PRE_WORKER'))
+    except Exception, e:
+        print e
+        print "Can not find config file: %s" % (CONFIG_FILE)
+        sys.exit(1)
 
     def run():
         center = Center()
