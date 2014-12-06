@@ -73,6 +73,9 @@ while True:
                     imageobject = models.Image.objects\
                         .get(repository=imageinfo[0], tag=imageinfo[1])
                     name = ' '.join(container['Names'])
+                    port_list = []
+                    for i in container['Ports']:
+                        port_list.append(i['PrivatePort'])
                     containernew = models.Container(
                         cid=container['Id'],
                         size=container['SizeRw'],
@@ -84,7 +87,7 @@ while True:
                         command=container['Command'],
                         created=container['Created'],
                         status=container['Status'],
-                        ports=' '.join(container['Ports']),
+                        ports=port_list,
                         hostname='localhost',
                         create_status=True)
                     containernew.save()

@@ -3,6 +3,7 @@
 
 import simplejson as json
 import models
+from mountain_tai.config import rediscon
 
 
 def scheduler_host(flavor, image):
@@ -191,9 +192,10 @@ def schedulerdocker(body):
                     '')
 
         cid = containerobject.cid
+        user_id = containerobject.user_id
         host = containerobject.host.ip
         port = containerobject.host.port
-        rdic = {'cid': cid, 'host': host, 'port': port}
+        rdic = {'cid': cid, 'host': host, 'port': port, 'user_id': user_id}
         resultdic = dict(body.items() + rdic.items())
         return (0, '', resultdic)
     else:
@@ -274,6 +276,12 @@ def updatedockerdb(body):
             containerobject.save()
         elif action == "delete_container":
             containerobject.delete()
+        elif action == "console_container":
+            username = result.get("username")
+            host = result.get("host")
+            console = result.get('console')
+            for key, value in console.items():
+                rediscon.set(username + str(value["public_port"]), host)
         else:
             containerobject.status = result.get('status')
             containerobject.save()
