@@ -279,10 +279,14 @@ def updatedockerdb(body):
         elif action == "delete_container":
             containerobject.delete()
             cid = result.get('cid')
-            rediscon.delete(*rediscon.keys(*cid[0:12] + '*'))
+            keyslist = rediscon.keys(cid[0:12] + '*')
+            if keyslist:
+                rediscon.delete(*keyslist)
         elif action == "stop_container" or action == "restart_container":
             cid = result.get('cid')
-            rediscon.delete(*rediscon.keys(cid[0:12] + '*'))
+            keyslist = rediscon.keys(cid[0:12] + '*')
+            if keyslist:
+                rediscon.delete(*keyslist)
         elif action == "console_container":
             username = result.get("username")
             cid = result.get('cid')
