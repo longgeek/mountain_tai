@@ -296,7 +296,7 @@ def updatedockerdb(body):
                 rawstr = username + cid + key
                 md5rawstr = cid[0:12] + hashlib.md5(rawstr).hexdigest()[0:12]
                 rediscon.set(md5rawstr, host+":" + str(value["public_port"]))
-                result['md5str'] = md5rawstr
+                result['console'][key]['url'] = md5rawstr
         else:
             containerobject.status = result.get('status')
             containerobject.save()
