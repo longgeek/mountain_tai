@@ -4,6 +4,7 @@
 import simplejson as json
 import models
 from mountain_tai.config import rediscon
+import hashlib
 
 
 def scheduler_host(flavor, image):
@@ -277,12 +278,21 @@ def updatedockerdb(body):
             containerobject.save()
         elif action == "delete_container":
             containerobject.delete()
+            cid = result.get('cid')
+            rediscon.delete(*rediscon.keys(*cid[0:12] + '*'))
+        elif action == "stop_container" or action == "restart_container":
+            cid = result.get('cid')
+            rediscon.delete(*rediscon.keys(cid[0:12] + '*'))
         elif action == "console_container":
             username = result.get("username")
+            cid = result.get('cid')
             host = result.get("host")
             console = result.get('console')
             for key, value in console.items():
-                rediscon.set(username + str(value["public_port"]), host)
+                rawstr = username + cid + key
+                md5rawstr = cid[0:12] + hashlib.md5(rawstr).hexdigest()[0:12]
+                rediscon.set(md5rawstr, host+":" + str(value["public_port"]))
+                result['md5str'] = md5rawstr
         else:
             containerobject.status = result.get('status')
             containerobject.save()
