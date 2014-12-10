@@ -4,6 +4,7 @@
 
 import os
 import sys
+import logging
 os.environ.setdefault("DJANGO_SETTINGS_MODULE",
                       "mountain_tai.config")
 from django.core.wsgi import get_wsgi_application
@@ -41,12 +42,12 @@ class Send(object):
 
     # 定义接收到返回消息的处理方法
     def on_response(self, channel, method, props, body):
+        logger.info('Receive from bat: %s' % body)
         updatestatus = api.updatedockerdb(body)
         self.response[props.correlation_id] = json.dumps(updatestatus)
 
     def request(self, body):
-        print 'Send to bat:', body
-        print body.get("host")
+        logger.info('Send to bat: %s' % body)
         corr_id = str(uuid.uuid4())
         self.response[corr_id] = None
 
@@ -92,7 +93,7 @@ class Center(object):
             2. 然后给docker_scheduler返回消息
         """
         send = Send()
-        print 'come from restful', body
+        logger.info('Come from restful: %s' % body)
         resultdic = api.scheduler_docker(body)
         if resultdic[0] == 0:
             response = send.request(resultdic[2])
@@ -125,6 +126,8 @@ if __name__ == "__main__":
         config = ConfigParser.ConfigParser()
         cfgfile = open(CONFIG_FILE, 'r')
         config.readfp(cfgfile)
+        LOG_LEVEL = config.get('mountain', 'LOG_LEVEL')
+        LOG_FILE = config.get('mountain', 'LOG_FILE')
         MQ_HOST = config.get('mountain', 'MQ_HOST')
         MQ_PORT = int(config.get('mountain', 'MQ_PORT'))
         QUEUE_DOCKER_SCHEDULER = config.get('mountain',
@@ -136,6 +139,12 @@ if __name__ == "__main__":
         print e
         print "Can not find config file: %s" % (CONFIG_FILE)
         sys.exit(1)
+    fh = logging.FileHandler(LOG_FILE)
+    formatter = logging.Formatter('[%(asctime)s][%(name)s][%(levelname)s]: %(message)s')
+    fh.setFormatter(formatter)
+    logger = logging.getLogger('mountain-scheduler')
+    logger.setLevel(getattr(logging,LOG_LEVEL))
+    logger.addHandler(fh)
 
     def run():
         center = Center()
@@ -155,5 +164,5 @@ if __name__ == "__main__":
 
         p = multiprocessing.Process(target=run)
         p.start()
-        print 'i = ', i, '   process id = ', p.pid
+        logger.info('i = %d process id = %s' % (i,p.pid))
     # center.channel.start_consuming()
