@@ -258,7 +258,6 @@ def updatedockerdb(body):
         the operation result
     """
 
-    print body
     status, msgs, result = json.loads(body)
     if status == 0:
         action = result.get('message_type')
@@ -283,6 +282,8 @@ def updatedockerdb(body):
             if keyslist:
                 rediscon.delete(*keyslist)
         elif action == "stop_container" or action == "restart_container":
+            containerobject.status = result.get('status')
+            containerobject.save()
             cid = result.get('cid')
             keyslist = rediscon.keys(cid[0:12] + '*')
             if keyslist:
