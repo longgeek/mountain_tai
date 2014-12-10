@@ -21,11 +21,16 @@ CONFIG_FILE = '/etc/mountain/mountain.conf'  # config file
 
 class Send(object):
     """控制中心类"""
-    _instance = None
-    connection = None
-    channel = None
 
     def __init__(self):
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host=MQ_HOST))
+
+        self.channel = self.connection.channel()
+
+        # 定义接收返回消息的队列
+        result = self.channel.queue_declare(exclusive=True)
+        self.callback_queue = result.method.queue
 
         # 定义接收返回消息的队列
         self.channel.basic_consume(self.on_response,
@@ -33,22 +38,6 @@ class Send(object):
                                    queue=self.callback_queue)
         self.response = {}
         pass
-
-    def __new__(self, *args, **kwargs):
-        if not self._instance:
-            self._instance = super(Send, self).__new__(
-                self, *args, **kwargs)
-
-            self.connection = pika.BlockingConnection(
-                pika.ConnectionParameters(host=MQ_HOST))
-
-            self.channel = self.connection.channel()
-
-            # 定义接收返回消息的队列
-            result = self.channel.queue_declare(exclusive=True)
-            self.callback_queue = result.method.queue
-
-        return self._instance
 
     # 定义接收到返回消息的处理方法
     def on_response(self, channel, method, props, body):
@@ -77,11 +66,12 @@ class Send(object):
 
 class Center(object):
     """控制中心类"""
-    _instance = None
-    connection = None
-    channel = None
-
     def __init__(self):
+
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host=MQ_HOST))
+
+        self.channel = self.connection.channel()
 
         # 定义接收返回消息的队列
         self.channel.queue_declare(queue=QUEUE_DOCKER_SCHEDULER,
@@ -91,17 +81,6 @@ class Center(object):
         self.channel.basic_consume(self.on_response,
                                    no_ack=False,
                                    queue=QUEUE_DOCKER_SCHEDULER)
-
-    def __new__(self, *args, **kwargs):
-        if not self._instance:
-            self._instance = super(Center, self).__new__(
-                self, *args, **kwargs)
-            self.connection = pika.BlockingConnection(
-                pika.ConnectionParameters(host=MQ_HOST))
-
-            self.channel = self.connection.channel()
-
-        return self._instance
 
     def start(self):
         self.channel.start_consuming()
