@@ -272,6 +272,7 @@ def updatedockerdb(body):
             containerobject.status = result.get('status')
             containerobject.ports = result.get('ports')
             containerobject.hostname = result.get('hostname')
+            containerobject.json_extra = result.get('json_extra')
             containerobject.create_status = True
             containerobject.save()
         elif action == "delete_container":
