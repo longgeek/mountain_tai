@@ -237,7 +237,7 @@ def scheduler_docker(body):
         return (1, 'Error: Please point the message_type!', '')
 
 
-def updatedockerdb(body):
+def updatedockerdb(body, protocol, server_name):
     """ update docker db
 
     update docker db via the container operation result
@@ -285,7 +285,7 @@ def updatedockerdb(body):
             containerobject.status = result.get('status')
             containerobject.save()
             cid = result.get('cid')
-            keyslist = rediscon.keys(cid[0:12] + '*')
+            keyslist = rediscon.keys(protocol+cid[0:12] + '*')
             if keyslist:
                 rediscon.delete(*keyslist)
         elif action == "console_container":
@@ -295,7 +295,8 @@ def updatedockerdb(body):
             console = result.get('console')
             for key, value in console.items():
                 rawstr = username + cid + key
-                md5rawstr = cid[0:12] + hashlib.md5(rawstr).hexdigest()[0:12]
+                md5rawstr = protocol+cid[0:12] +\
+                    hashlib.md5(rawstr).hexdigest()[0:12] + '.' + server_name
                 rediscon.set(md5rawstr, host+":" + str(value["public_port"]))
                 result['console'][key]['url'] = md5rawstr
         else:

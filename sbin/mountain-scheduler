@@ -43,7 +43,7 @@ class Send(object):
     # 定义接收到返回消息的处理方法
     def on_response(self, channel, method, props, body):
         logger.info('Receive from bat: %s' % body)
-        updatestatus = api.updatedockerdb(body)
+        updatestatus = api.updatedockerdb(body, PROTOCOL, SERVER_NAME)
         self.response[props.correlation_id] = json.dumps(updatestatus)
 
     def request(self, body):
@@ -133,6 +133,8 @@ if __name__ == "__main__":
         QUEUE_DOCKER_SCHEDULER = config.get('mountain',
                                             'QUEUE_DOCKER_SCHEDULER')
         QUEUE_DOCKER_TASK = config.get('mountain', 'QUEUE_DOCKER_TASK')
+        PROTOCOL = config.get('mountain', 'PROTOCOL')
+        SERVER_NAME = config.get('mountain', 'SERVER_NAME')
         WORKERS = int(config.get('mountain', 'WORKERS'))
         PROCESS_PER_WORKER = int(config.get('mountain', 'PROCESS_PRE_WORKER'))
     except Exception, e:
@@ -140,10 +142,11 @@ if __name__ == "__main__":
         print "Can not find config file: %s" % (CONFIG_FILE)
         sys.exit(1)
     fh = logging.FileHandler(LOG_FILE)
-    formatter = logging.Formatter('[%(asctime)s][%(name)s][%(levelname)s]: %(message)s')
+    formatter = logging.Formatter(
+        '[%(asctime)s][%(name)s][%(levelname)s]: %(message)s')
     fh.setFormatter(formatter)
     logger = logging.getLogger('mountain-scheduler')
-    logger.setLevel(getattr(logging,LOG_LEVEL))
+    logger.setLevel(getattr(logging, LOG_LEVEL))
     logger.addHandler(fh)
 
     def run():
@@ -164,5 +167,5 @@ if __name__ == "__main__":
 
         p = multiprocessing.Process(target=run)
         p.start()
-        logger.info('i = %d process id = %s' % (i,p.pid))
+        logger.info('i = %d process id = %s' % (i, p.pid))
     # center.channel.start_consuming()
