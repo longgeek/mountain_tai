@@ -100,6 +100,7 @@ class Center(object):
         else:
             response = json.dumps(resultdic)
 
+        logger.info('send to restful: %s' % response)
         ch.basic_publish(exchange='',
                          routing_key=props.reply_to,
                          properties=pika.BasicProperties(
