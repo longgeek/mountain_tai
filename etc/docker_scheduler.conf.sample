@@ -1,5 +1,0 @@
-# Docker Scheduler Configuration
-
-DOCKER_HOSTS = '192.168.3.1:2321', '192.168.3.2:2321'
-
-TIMEOUT = 5

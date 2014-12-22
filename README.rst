@@ -51,7 +51,7 @@ Modify the configuration file:
     ....
 
 Run it:
-    service mountain_tai restart
+    service mountain-tai restart
 
 Log:
     tail -f /var/log/mountain/moutain.log
