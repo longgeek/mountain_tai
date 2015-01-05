@@ -45,6 +45,8 @@ The configuration file:
     cp sbin/mountain-scheduler /usr/sbin/
     mkdir /var/log/mountain
     chown :adm /var/log/mountain
+    logrotate -f /etc/logrotate.d/mounatin-tai
+    service rsyslog restart
 
 Modify the configuration file:
     vim /etc/mountain/mountain.conf
