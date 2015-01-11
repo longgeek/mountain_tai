@@ -35,15 +35,18 @@ How to use (For Ubuntu-14.04.1 Server)
 --------------------------------------
 Dependent on the installation of the mountain_tai:
     git clone git@git.pyindex.com:reviewdev/mountain_tai.git
+    apt-get install python-mysqldb
     cd mountain_tai/
-    pip install -r requirements.txt
+    python setup.py egg_info
+    pip install -r mountain_tai.egg-info/requires.txt
     python setup.py install (Develop mode: python setup.py develop)
 
 The configuration file:
-    cd mountain_tai/
-    cp -r etc/* /etc/
+    mkdir /etc/mountain /var/log/mountain
+    cp etc/mountain/mountain.conf.sample /etc/mountain/mountain.conf
+    cp etc/init/mountain-tai.conf /etc/init/
+    cp etc/logrotate.d/mountain-tai /etc/logrotate.d/
     cp sbin/mountain-scheduler /usr/sbin/
-    mkdir /var/log/mountain
     chown :adm /var/log/mountain
     logrotate -f /etc/logrotate.d/mounatin-tai
     service rsyslog restart
