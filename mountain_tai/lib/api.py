@@ -5,6 +5,7 @@ import simplejson as json
 import models
 from mountain_tai.config import rediscon
 import hashlib
+import time
 
 
 def scheduler_host(flavor, image):
@@ -144,6 +145,8 @@ def create_container(body):
         host=hostdic.get('hostobject'),
     )
     containerobject.save()
+    container_name = str(int(time.time())) + str(containerobject.id)
+    body['container_name'] = container_name[-11:]
     body.pop('image')
     body.pop('host')
     body.pop('flavor_id')
@@ -266,7 +269,7 @@ def updatedockerdb(body, protocol, server_name):
         if action == "create_container":
             containerobject.cid = result.get('cid')
             containerobject.size = result.get('size')
-            containerobject.name = result.get('name')
+            containerobject.name = result.get('container_name')
             containerobject.command = result.get('command')
             containerobject.created = result.get('created')
             containerobject.status = result.get('status')
