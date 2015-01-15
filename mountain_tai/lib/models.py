@@ -64,6 +64,7 @@ class Host(models.Model):
 
 class Container(models.Model):
     cid = models.CharField(max_length=80, null=True, blank=True)
+    tag = models.CharField(max_length=120, null=True, blank=True)
     size = models.CharField(max_length=40, null=True, blank=True)
     flavor_id = models.CharField(max_length=20)
     image = models.ForeignKey(Image)
@@ -73,10 +74,11 @@ class Container(models.Model):
     command = models.CharField(max_length=200, null=True, blank=True)
     created = models.CharField(max_length=40, null=True, blank=True)
     status = models.CharField(max_length=40, null=True, blank=True)
-    ports = models.CharField(max_length=2000, null=True, blank=True)
+    ports = models.CharField(max_length=400, null=True, blank=True)
     hostname = models.CharField(max_length=80, null=True, blank=True)
     create_status = models.BooleanField(_("Create_Status"), default=False)
     json_extra = models.TextField(null=True, blank=True)
+    container_name = models.CharField(max_length=100)
 
     class Meta:
         app_label = "apphome"
