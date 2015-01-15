@@ -5,7 +5,6 @@ import simplejson as json
 import models
 from mountain_tai.config import rediscon
 import hashlib
-import time
 
 
 def scheduler_host(flavor, image):
@@ -145,8 +144,6 @@ def create_container(body):
         host=hostdic.get('hostobject'),
     )
     containerobject.save()
-    container_name = str(int(time.time())) + str(containerobject.id)
-    body['container_name'] = container_name[-11:]
     body.pop('image')
     body.pop('host')
     body.pop('flavor_id')
