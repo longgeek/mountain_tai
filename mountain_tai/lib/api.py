@@ -266,7 +266,8 @@ def updatedockerdb(body, protocol, server_name):
         if action == "create_container":
             containerobject.cid = result.get('cid')
             containerobject.size = result.get('size')
-            containerobject.name = result.get('container_name')
+            containerobject.name = result.get('name')
+            containerobject.container_name = result.get('container_name')
             containerobject.command = result.get('command')
             containerobject.created = result.get('created')
             containerobject.status = result.get('status')
