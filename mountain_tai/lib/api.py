@@ -276,6 +276,13 @@ def updatedockerdb(body, protocol, server_name):
             containerobject.json_extra = result.get('json_extra')
             containerobject.create_status = True
             containerobject.save()
+            url = protocol + result.get('username') + '.' + server_name
+            urlvalue = result.get('host') + ":" + result.get('www_port')
+            rediscon.set(url, urlvalue)
+        elif action == "start_container":
+            url = protocol + result.get('username') + '.' + server_name
+            urlvalue = result.get('host') + ":" + result.get('www_port')
+            rediscon.set(url, urlvalue)
         elif action == "delete_container":
             containerobject.delete()
             cid = result.get('cid')
