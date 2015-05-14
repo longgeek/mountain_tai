@@ -276,13 +276,14 @@ def updatedockerdb(body, protocol, server_name):
             containerobject.json_extra = result.get('json_extra')
             containerobject.create_status = True
             containerobject.save()
-            url = protocol + result.get('username') + '.' + server_name
-            urlvalue = result.get('host') + ":" + result.get('www_port')
-            rediscon.set(url, urlvalue)
+            s, m, r = _pre_console(result, protocol, server_name)
+            if s != 0:
+                return (s, m, r)
         elif action == "start_container":
-            url = protocol + result.get('username') + '.' + server_name
-            urlvalue = result.get('host') + ":" + result.get('www_port')
-            rediscon.set(url, urlvalue)
+            s, m, r = _pre_console(result, protocol, server_name)
+            if s != 0:
+                return (s, m, r)
+
         elif action == "delete_container":
             containerobject.delete()
             cid = result.get('cid')
@@ -318,3 +319,33 @@ def updatedockerdb(body, protocol, server_name):
             containerobject = models.Container.objects.get(id=int(containerid))
             containerobject.delete()
         return status, msgs.get('error'), result
+
+
+def _pre_console(result, protocol, server_name):
+    """在 redis 中保存 user_name ssh 8000 9000 url 地址,
+    适用于 create_container 和 start_container
+
+    @result: bat 正常返回的数据
+    Return: (status, msgs, results)
+
+    """
+
+    try:
+        user_name = result.get('username')
+        url = [user_name, 'ssh', '8000', '9000']
+        val = ['www_port', 'ssh_port', '8000_port', '9000_port']
+        for key in range(len(url)):
+            if key == 0:
+                rediscon.set(
+                    protocol + url[key] + '.' + server_name,
+                    result.get('host') + ':' + result.get(val[key])
+                )
+            else:
+                rediscon.set(
+                    protocol + url[key] + '.' +
+                    user_name + '.' + server_name,
+                    result.get('host') + ':' + result.get(val[key])
+                )
+        return (0, '', '')
+    except Exception, e:
+        return (1, str(e), '')
